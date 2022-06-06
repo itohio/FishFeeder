@@ -9,8 +9,8 @@ var (
 	feedingTime   = time.Now()
 	feedingCount  = 0
 	feedingDelays = []time.Duration{
-		time.Second * 20,
-		time.Second * 3,
+		time.Second * 30,
+		time.Second * 30,
 		time.Second * 30,
 		time.Second * 3,
 	}
