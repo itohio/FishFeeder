@@ -68,7 +68,7 @@ func run(args []string) error {
 		}
 	}
 
-	fmt.Println("package main")
+	fmt.Println("package icons")
 	fmt.Println()
 
 	fmt.Println("const (")

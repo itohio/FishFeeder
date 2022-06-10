@@ -3,15 +3,17 @@ package main
 import (
 	"image/color"
 	"time"
+
+	"github.com/itohio/FishFeeder/icons"
 )
 
 var (
 	selectedTime  = time.Now()
 	selectedNudge = -1
-	icons         = [][]uint16{
-		FoodPng,
-		AquariumPng,
-		FilterPng,
+	iconImages    = [][]uint16{
+		icons.FoodPng,
+		icons.AquariumPng,
+		icons.FilterPng,
 	}
 
 	colors = []color.RGBA{
@@ -24,17 +26,17 @@ var (
 		{
 			timestamp: time.Now(),
 			delay:     time.Hour * 24,
-			nudge:     makeNudge(colors[0], FoodPng),
+			nudge:     makeNudge(colors[0], icons.FoodPng),
 		},
 		{
 			timestamp: time.Now(),
 			delay:     time.Hour * 24 * 7,
-			nudge:     makeNudge(colors[1], AquariumPng),
+			nudge:     makeNudge(colors[1], icons.AquariumPng),
 		},
 		{
 			timestamp: time.Now(),
 			delay:     time.Hour * 24 * 30,
-			nudge:     makeNudge(colors[2], FilterPng),
+			nudge:     makeNudge(colors[2], icons.FilterPng),
 		},
 	}
 )

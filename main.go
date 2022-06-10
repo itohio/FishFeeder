@@ -13,6 +13,8 @@ import (
 	"image/color"
 	"machine"
 	"time"
+
+	"github.com/itohio/FishFeeder/icons"
 )
 
 type Command int
@@ -28,16 +30,7 @@ const (
 	RESET_3
 )
 
-var (
-	ledPin   = machine.IO10
-	servoPin = machine.IO26
-	btnMain  = machine.IO37
-	btnSide  = machine.IO39
-
-	display Display
-	servo   Servo
-	command = make(chan Command)
-)
+var command = make(chan Command)
 
 func initUART() {
 	go func() {
@@ -105,8 +98,12 @@ func initButtons() {
 				}
 			}
 			if !btnSide.Get() {
-				_ = button(btnSide)
-				command <- NEXT
+				d := button(btnSide)
+				if d > time.Second {
+					command <- DISPENSE
+				} else {
+					command <- NEXT
+				}
 			}
 			time.Sleep(time.Millisecond * 10)
 		}
@@ -198,9 +195,9 @@ func draw() {
 		if selectedNudge == i {
 			display.FillRectangle(x-1, 9, 42, 42, color.RGBA{R: 100})
 		}
-		display.DrawRGBBitmap(x, 10, icons[i], 40, 40)
+		display.DrawRGBBitmap(x, 10, iconImages[i], 40, 40)
 		d := int16(40 * n.ETAPercent())
 		display.Bar(x, 10+41, d, 40, maxColor(colors[i]))
 	}
-	display.DrawRGBBitmap(1, 80-ThermometerHeight-1, ThermometerPng, ThermometerWidth, ThermometerHeight)
+	display.DrawRGBBitmap(1, 80-icons.ThermometerHeight-1, icons.ThermometerPng, icons.ThermometerWidth, icons.ThermometerHeight)
 }

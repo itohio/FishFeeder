@@ -1,4 +1,4 @@
-package main
+package icons
 
 const (
 	AquariumWidth  = 40

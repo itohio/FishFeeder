@@ -3,16 +3,20 @@ package main
 import (
 	"image/color"
 	"time"
+
+	"github.com/itohio/FishFeeder/icons"
 )
 
 var (
-	feedingTime   = time.Now()
-	feedingCount  = 0
+	feedingTime  = time.Now()
+	feedingCount = 0
+	// Feeding scheme. Depends on the amount of food, how fast it sinks, how observant fish are, etc.
+	// Half of my fish don't notice the food until it is all on the ground if I dump it all right away.
 	feedingDelays = []time.Duration{
-		time.Second * 30,
-		time.Second * 30,
-		time.Second * 30,
-		time.Second * 3,
+		time.Second * 30, // feed some faster fish and wait for 30s for other fish to notice food
+		time.Second * 30, // feed again
+		time.Second * 30, // feed some really slow fish
+		time.Second * 3,  // this is ignored, just did not bother to clean it up algorithm-wise
 	}
 )
 
@@ -76,7 +80,7 @@ func feed() {
 
 func dispenseFood() {
 	display.FillScreen(color.RGBA{})
-	display.DrawRGBBitmap((160-40)/2, (80-40)/2, FoodPng, 40, 40)
+	display.DrawRGBBitmap((160-40)/2, (80-40)/2, icons.FoodPng, 40, 40)
 
 	servo.SetAngle(5)
 	time.Sleep(time.Millisecond * 200)

@@ -1,2 +1,4 @@
 # FishFeeder
-Automatic fish feeder using ESP32 Atom module
+Automatic fish feeder using M5StickC module.
+
+
