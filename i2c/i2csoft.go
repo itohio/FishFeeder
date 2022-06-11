@@ -106,7 +106,11 @@ func (i2c *I2C) Tx(addr uint16, w, r []byte) error {
 		for _, b := range w {
 			i2c.writeByte(b)
 		}
-		i2c.signalStop1()
+		if len(r) != 0 {
+			i2c.signalStop1()
+		} else {
+			i2c.signalStop()
+		}
 	}
 	if len(r) != 0 {
 		// send start/address for read
