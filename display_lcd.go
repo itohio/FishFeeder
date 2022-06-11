@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/itohio/FishFeeder/st7735"
+	"tinygo.org/x/drivers"
 	"tinygo.org/x/drivers/image/png"
 )
 
@@ -16,6 +17,8 @@ var display Display
 type Display struct {
 	st7735.Device
 }
+
+var _ drivers.Displayer = &Display{}
 
 func newDisplay() Display {
 	spi := machine.SPI3

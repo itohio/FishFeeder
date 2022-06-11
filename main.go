@@ -1,20 +1,19 @@
 package main
 
-// Icons:
-// Fish Food icon by Icons8: https://icons8.com/icon/jQmKQCKAiKna/fish-food
-// Aquarium icon by Icons8: https://icons8.com/icon/1Wi51AkN6dYv/aquarium
-// Water Filter icon by Icons8: https://icons8.com/icon/dGlyR3EdBrXx/water-filter
-// Thermometer icon by Icons8: https://icons8.com/icon/poFZHQZ-CjsC/thermometer
-
 //go:generate tinygo build -target=m5stack -o fishfeeder.bin
 //go:generate esptool -p COM3 write_flash -e 0x1000 fishfeeder.bin
 
 import (
+	"fmt"
 	"image/color"
 	"machine"
 	"time"
 
+	"github.com/itohio/FishFeeder/i2c"
 	"github.com/itohio/FishFeeder/icons"
+	"github.com/itohio/FishFeeder/mlx90614"
+	"tinygo.org/x/tinyfont"
+	"tinygo.org/x/tinyfont/freemono"
 )
 
 type Command int
@@ -30,6 +29,7 @@ const (
 	RESET_3
 )
 
+var temperature *mlx90614.Device
 var command = make(chan Command)
 
 func initUART() {
@@ -69,6 +69,14 @@ func initUART() {
 				for _, n := range nudges {
 					println(n.ETA().String())
 				}
+			case byte('t'):
+				println("ok 5 ")
+				id := temperature.ID()
+				println(id[0], id[1], id[2], id[3])
+				println(temperature.Emissivity())
+				println(temperature.Ambient())
+				println(temperature.Object1())
+				println(temperature.Object2())
 			}
 		}
 	}()
@@ -110,6 +118,20 @@ func initButtons() {
 	}()
 }
 
+func initTemperature() {
+	bus := i2c.New(i2cCLK, i2cDATA)
+	bus.Configure(i2c.I2CConfig{Frequency: 20e3})
+
+	for i := 0; i < 255; i++ {
+		if bus.Tx(uint16(i), []byte{}, []byte{0}) == nil {
+			println(i)
+		}
+	}
+
+	temperature = mlx90614.New(bus, mlx90614.I2C_ADDR)
+	temperature.Configure(.90) // emissivity of water
+}
+
 func echo() {
 	for {
 		time.Sleep(time.Millisecond)
@@ -123,6 +145,7 @@ func echo() {
 
 func main() {
 	initPower()
+	initTemperature()
 
 	display = newDisplay()
 	servo = newServo(servoPin)
@@ -199,5 +222,12 @@ func draw() {
 		d := int16(40 * n.ETAPercent())
 		display.Bar(x, 10+41, d, 40, maxColor(colors[i]))
 	}
+
 	display.DrawRGBBitmap(1, 80-icons.ThermometerHeight-1, icons.ThermometerPng, icons.ThermometerWidth, icons.ThermometerHeight)
+
+	display.FillRectangle(20, 80-icons.ThermometerHeight, 140, 14, color.RGBA{})
+	ambient := fmt.Sprintf("%0.1f", temperature.Ambient())
+	water := fmt.Sprintf("%0.1f", temperature.Object1())
+	tinyfont.WriteLine(&display, &freemono.Bold9pt7b, 21, 80-icons.ThermometerHeight-1+12, water, color.RGBA{100, 100, 255, 255})
+	tinyfont.WriteLine(&display, &freemono.Bold9pt7b, 21+60, 80-icons.ThermometerHeight-1+12, ambient, color.RGBA{100, 100, 100, 255})
 }

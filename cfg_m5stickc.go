@@ -18,11 +18,19 @@ var (
 	displayDC  = machine.IO23
 	displayCS  = machine.IO5
 	displayBL  = machine.NoPin
+
+	// Grove connector
+	i2cCLK  = machine.IO33
+	i2cDATA = machine.IO32
+
+	// I2C bus used for internal periphery
+	i2cInternalCLK  = machine.IO22
+	i2cInternalDATA = machine.IO21
 )
 
 // some M5StickCs have LCD backlight off by default, so we must turn on the LCD ldo.
 func initPower() {
-	i2c := i2csoft.New(machine.IO22, machine.IO21)
+	i2c := i2csoft.New(i2cInternalCLK, i2cInternalDATA)
 	i2c.Configure(i2csoft.I2CConfig{Frequency: 100e3})
 	axp := axp192.New(i2c)
 	axp.SetLDOEnable(2, true)
