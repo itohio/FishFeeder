@@ -13,7 +13,7 @@ aquatic critters!
 
 ## Design
 At first I was thinking what kind of hardware to use and how to connect it to the Internet, however, I was really stoked on doing this project
-using Go. So, ESP32 wifi capabilities were out the window until [this]() is resolved.
+using Go. So, ESP32 wifi capabilities were out the window until [this and related issues](https://github.com/tinygo-org/tinygo/issues/2024) are resolved.
 Then I was thinking whether to design the hardware and solder it myself... And then one day I remembered, that I've got a couple of M5StickC modules lying around
 without any interesting usecase.
 
