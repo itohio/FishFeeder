@@ -37,3 +37,7 @@ I really really really wait for TinyGo to have native WiFi capability on these c
 - Reset feeding timer and feed the fish (configurable feeding pattern)
 - M5Stack IR temperature sensor
 - Remote feeding and status (via USB, serial)
+
+## Build
+
+You only need an Espressif IDF SDK and a proper version of `esptool.py` (on Windows it installs as esptool.py.exe which totally screws with the tooling for some reason, so I had to manually copy and rename the executable installed by pip). If your `esptool` is working and the M5StickC(or any ESP32 board for that matter!) is connected, you can run `go generate` and after brief compillation the firmware will be flashed.
