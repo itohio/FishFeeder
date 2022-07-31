@@ -24,7 +24,7 @@ I took the M5StickC, experimental Pomodoro timer code, refactored it a bit, fidd
 
 ![3D printed dispenser](parts/dispenser.jpg)
 
-I really really really wait for TinyGo to have native WiFi capability on these chips! (Maybe Espressif will help?)
+I really really really wait for TinyGo to have native WiFi capability on these chips! (Maybe Espressif will help?) This way I would be able to connect a camera module, integrate Wireguard and stream video/pictures without Raspberry Pi!
 
 ## Features
 
