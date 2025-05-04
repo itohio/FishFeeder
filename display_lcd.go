@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image/color"
 	"machine"
 	"strings"
@@ -70,7 +69,7 @@ func (d *Display) DrawPng(x0, y0 int16, pngImage string) error {
 		println(x0+x, y0+y, w, h, width, height, W, H, len(data))
 		err := d.DrawRGBBitmap(x0+x, y0+y, data[:w*h], w, h)
 		if err != nil {
-			println(fmt.Errorf("error drawPng: %s", err))
+			println(err.Error())
 		}
 	})
 
@@ -82,7 +81,7 @@ func (d *Display) DrawPng(x0, y0 int16, pngImage string) error {
 	w, h = d.Size()
 	println(w, h)
 	if err != nil {
-		println(fmt.Errorf("error drawPng: %s", err))
+		println(err.Error())
 	}
 	return err
 }

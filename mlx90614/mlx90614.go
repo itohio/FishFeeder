@@ -96,12 +96,14 @@ func (d *Device) write16(reg uint8, data uint16) error {
 	db[1] = db[2]
 	db[2] = db[3]
 	db[3] = pec
-	return d.bus.WriteRegister(d.addr, reg, db[2:])
+	// return d.bus.WriteRegister(d.addr, reg, db[2:])
+	return d.bus.Tx(uint16(d.addr), db[1:], nil)
 }
 
 func (d *Device) read16(reg uint8) uint16 {
 	db := [3]byte{}
-	err := d.bus.ReadRegister(d.addr, reg, db[:])
+	err := d.bus.Tx(uint16(d.addr), []byte{reg}, db[:])
+	// err := d.bus.ReadRegister(d.addr, reg, db[:])
 	if err != nil {
 		return 0
 	}

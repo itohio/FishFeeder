@@ -1,12 +1,12 @@
 package main
 
-//go:generate tinygo build -target=m5stack -o fishfeeder.bin
-//go:generate esptool -p COM3 write_flash -e 0x1000 fishfeeder.bin
+//go:generate tinygo build -target=m5stick-c -o fishfeeder.bin
+//go:generate esptool -p COM5 write_flash -e 0x1000 fishfeeder.bin
 
 import (
-	"fmt"
 	"image/color"
 	"machine"
+	"strconv"
 	"time"
 
 	"github.com/itohio/FishFeeder/i2c"
@@ -37,11 +37,12 @@ func initUART() {
 		uart := machine.DefaultUART
 
 		for {
-			time.Sleep(time.Millisecond)
-			if machine.DefaultUART.Bus.STATUS.Get()&255 < 1 {
-				continue
-			}
-			b := machine.DefaultUART.Bus.RX_FIFO.Get()
+			b, _ := uart.ReadByte()
+			// time.Sleep(time.Millisecond)
+			// if machine.DefaultUART.Bus.STATUS.Get()&255 < 1 {
+			// 	continue
+			// }
+			// b := machine.DefaultUART.Bus.RX_FIFO.Get()
 
 			uart.WriteByte(b)
 
@@ -138,7 +139,7 @@ func echo() {
 		if machine.DefaultUART.Bus.STATUS.Get()&255 < 1 {
 			continue
 		}
-		println(machine.DefaultUART.Bus.MEM_RX_STATUS.Get()&7, machine.DefaultUART.Bus.RXD_CNT.Get(), machine.DefaultUART.Bus.RX_FIFO.Get())
+		// println(machine.DefaultUART.Bus.MEM_RX_STATUS.Get()&7, machine.DefaultUART.Bus.RXD_CNT.Get(), machine.DefaultUART.Bus.RX_FIFO.Get())
 		// machine.DefaultUART.WriteByte(b)
 	}
 }
@@ -154,7 +155,7 @@ func main() {
 	ledPin.Configure(machine.PinConfig{Mode: machine.PinOutput})
 	ledPin.High()
 
-	initUART()
+	// initUART()
 	initButtons()
 
 	display.FillScreen(color.RGBA{0, 0, 0, 255})
@@ -165,6 +166,18 @@ func main() {
 			time.Sleep(time.Second)
 		}
 	}()
+
+	originalNudge := nudges[0].nudge
+	nudges[0].nudge = func(n *Nudge) bool {
+		if originalNudge(n) {
+			return true
+		}
+
+		go func() {
+			command <- FEED
+		}()
+		return true
+	}
 
 	for cmd := range command {
 		for i := range nudges {
@@ -226,8 +239,10 @@ func draw() {
 	display.DrawRGBBitmap(1, 80-icons.ThermometerHeight-1, icons.ThermometerPng, icons.ThermometerWidth, icons.ThermometerHeight)
 
 	display.FillRectangle(20, 80-icons.ThermometerHeight, 140, 14, color.RGBA{})
-	ambient := fmt.Sprintf("%0.1f", temperature.Ambient())
-	water := fmt.Sprintf("%0.1f", temperature.Object1())
+	ambient := strconv.FormatFloat(temperature.Ambient(), 'f', 1, 32)
+	// ambient := fmt.Sprintf("%0.1f", temperature.Ambient())
+	water := strconv.FormatFloat(temperature.Object1(), 'f', 1, 32)
+	// water := fmt.Sprintf("%0.1f", temperature.Object1())
 	tinyfont.WriteLine(&display, &freemono.Bold9pt7b, 21, 80-icons.ThermometerHeight-1+12, water, color.RGBA{100, 100, 255, 255})
 	tinyfont.WriteLine(&display, &freemono.Bold9pt7b, 21+60, 80-icons.ThermometerHeight-1+12, ambient, color.RGBA{100, 100, 100, 255})
 }

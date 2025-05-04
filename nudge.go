@@ -7,7 +7,7 @@ import (
 type Nudge struct {
 	timestamp time.Time
 	delay     time.Duration
-	nudge     func(*Nudge)
+	nudge     func(*Nudge) bool
 }
 
 func (n *Nudge) Elapsed() time.Duration {
@@ -22,8 +22,9 @@ func (n *Nudge) ETAPercent() float64 {
 
 func (n *Nudge) Check() {
 	if n.ETA() < 0 {
-		n.nudge(n)
-		n.Reset()
+		if n.nudge(n) {
+			n.Reset()
+		}
 	}
 }
 

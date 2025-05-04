@@ -14,7 +14,7 @@ var (
 	// Half of my fish don't notice the food until it is all on the ground if I dump it all right away.
 	feedingDelays = []time.Duration{
 		time.Second * 30, // feed some faster fish and wait for 30s for other fish to notice food
-		time.Second * 30, // feed again
+		time.Second * 3,  // feed again
 		time.Second * 30, // feed some really slow fish
 		time.Second * 3,  // this is ignored, just did not bother to clean it up algorithm-wise
 	}

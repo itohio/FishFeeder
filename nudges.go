@@ -25,17 +25,17 @@ var (
 	nudges = []Nudge{
 		{
 			timestamp: time.Now(),
-			delay:     time.Hour * 24,
-			nudge:     makeNudge(colors[0], icons.FoodPng),
+			delay:     time.Hour * 12,
+			nudge:     makeNudgeWithCount(colors[0], icons.FoodPng, 2),
 		},
 		{
 			timestamp: time.Now(),
-			delay:     time.Hour * 24 * 7,
+			delay:     time.Hour * 24 * 14,
 			nudge:     makeNudge(colors[1], icons.AquariumPng),
 		},
 		{
 			timestamp: time.Now(),
-			delay:     time.Hour * 24 * 30,
+			delay:     time.Hour * 24 * 31,
 			nudge:     makeNudge(colors[2], icons.FilterPng),
 		},
 	}
@@ -112,13 +112,18 @@ func sleep(n *Nudge, icon []uint16) bool {
 	return false
 }
 
-func makeNudge(c color.RGBA, icon []uint16) func(*Nudge) {
-	return func(n *Nudge) {
-		for {
+func makeNudge(c color.RGBA, icon []uint16) func(*Nudge) bool {
+	return makeNudgeWithCount(c, icon, -1)
+}
+
+func makeNudgeWithCount(c color.RGBA, icon []uint16, N int) func(*Nudge) bool {
+	return func(n *Nudge) bool {
+		for i := 0; i < N || N == -1; i++ {
 			if flash(c, n) || sleep(n, icon) {
 				display.FillScreen(color.RGBA{})
-				break
+				return true
 			}
 		}
+		return false
 	}
 }
